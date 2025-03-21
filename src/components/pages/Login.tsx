@@ -1,30 +1,45 @@
 
+
 import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 
-interface Child {
+interface Player {
   firstName: string;
   lastName: string;
   age: number;
+  birthDate: string;
   gender: string;
 }
 
 const Login: React.FC = () => {
-  const [isRegistered, setIsRegistered] = useState<boolean>(false);
+  const [isRegistered, setIsRegistered] = useState<boolean>(true); // Default to Sign In
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     firstName: '',
     lastName: '',
-    children: [{ firstName: '', lastName: '', age: 0, gender: '' }] as Child[], // Default empty child data
+    telephone: '',
+    children: [{ firstName: '', lastName: '', age: 0, birthDate: '', gender: '' }] as Player[],
   });
 
-  // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index?: number) => {
+  const navigate = useNavigate(); // Hook to navigate between pages
+
+   // Handle input changes
+   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index?: number) => {
     const { name, value } = e.target;
+  
     if (index !== undefined) {
       const newChildren = [...formData.children];
-      newChildren[index] = { ...newChildren[index], [name]: value };
+  
+      if (name === "birthdate") {
+        // Ensure value is stored in the correct format
+        newChildren[index] = { ...newChildren[index], birthDate: value };
+      } else {
+        newChildren[index] = { ...newChildren[index], [name]: value };
+      }
+  
       setFormData((prev) => ({ ...prev, children: newChildren }));
     } else {
       setFormData((prev) => ({
@@ -33,12 +48,11 @@ const Login: React.FC = () => {
       }));
     }
   };
-
-  // Add a new child
+   // Add a new child
   const addChild = () => {
     setFormData((prev) => ({
       ...prev,
-      children: [...prev.children, { firstName: '', lastName: '', age: 0, gender: '' }],
+      children: [...prev.children, { firstName: '', lastName: '', age: 0, birthDate: '', gender: '' }],
     }));
   };
 
@@ -51,90 +65,63 @@ const Login: React.FC = () => {
     }));
   };
 
-  // Handle form submission
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (isRegistered) {
-  //     console.log('Sign In with:', formData.email, formData.password);
-  //   } else {
-  //     console.log('Sign Up with:', formData);
-  //   }
-  // };
 
+  const API_BASE_URL = 'http://localhost:8080/parent';
 
+  // Handle Login or Registration
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-const API_BASE_URL = 'http://localhost:8080/parent/createOrCreate'; // Replace with your backend URL
+    try {
+      if (isRegistered) {
+        // Sign In Functionality
+        const response = await axios.post(`${API_BASE_URL}/createOrGet`, {
+          email: formData.email,
+          password: formData.password,
+        });
 
-// const handleSubmit = async (e: React.FormEvent) => {
-//   e.preventDefault();
+        if (response.status === 200) {
+          const parentData = response.data;
+          toast.success(`Welcome ${parentData.firstName}!`);
 
-//   try {
-//     if (isRegistered) {
-//       console.log('Attempting login...');
-//       const response = await axios.post('http://localhost:8080/api/auth/login', {
-//         email: formData.email,
-//         password: formData.password,
-//       }, {
-//         headers: { 'Content-Type': 'application/json' }
-//       });
+          // Store user data in localStorage or sessionStorage
+          localStorage.setItem("parentData", JSON.stringify(parentData));
 
-//       if (response.status === 200) {
-//         alert('Login successful!');
-//         console.log('Login Response:', response.data);
-//         // Redirect or update UI accordingly
-//       } else {
-//         alert('Login failed. Please check your credentials.');
-//       }
-//     } else {
-//       console.log('Attempting registration...');
-//       const response = await axios.post('http://localhost:8080/parent/createOrGet', formData, {
-//         headers: { 'Content-Type': 'application/json' }
-//       });
+          // Redirect to Dashboard
+          navigate('/dashboard');
+        }
+      } else {
+        // Sign Up Functionality
+        const response = await axios.post(`${API_BASE_URL}/createOrGet`, {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          telephone: formData.telephone,
+          players: formData.children,
+        });
 
-//       if (response.status === 201 || response.status === 200) {
-//         alert('Registration successful!');
-//         console.log('Registration Response:', response.data);
-//         // Optionally switch to login page
-//         setIsRegistered(true);
-//       } else {
-//         alert('Registration failed. Please try again.');
-//       }
-//     }
-//   } catch (error) {
-//     if (axios.isAxiosError(error) && error.response) {
-//       alert(`Error: ${error.response.data.message || 'Something went wrong'}`);
-//       console.error('Error Response:', error.response.data);
-//     } else {
-//       alert('Network error. Please check your connection.');
-//       console.error('Error:', /*error.message*/ "error message");
-//     }
-//   }
-// };
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  try {
-    const response = await fetch("http://localhost:8080/parent/createOrGet", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: formData.email,
-        password: formData.password,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+        if (response.status === 200) {
+          const parentName = response.data;
+          toast.success("Welcome " + parentName.firstName + " registration has been successful! You can sign in to check your profile.");
+          setIsRegistered(true); // Switch to Sign In mode
+        }
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Email or password is incorrect");
+      } else {
+        console.error("Unexpected Error:", error);
+      }
     }
+  };
 
-    const data = await response.json();
-    console.log("Login Successful", data);
-  } catch (error) {
-    console.error("Error Response:", error);
-  }
-};
+ //const navigate = useNavigate(); // Hook to navigate between pages
+
+  const handleForgotPassword = () => {
+    navigate('/forgotPassword'); // Redirect to the Forgot Password page
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -144,9 +131,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         <form onSubmit={handleSubmit}>
           {/* Common Email and Password Fields */}
           <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700 mb-2">
-              Email
-            </label>
+            <label htmlFor="email" className="block text-gray-700 mb-2">Email</label>
             <input
               type="email"
               id="email"
@@ -158,9 +143,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="password" className="block text-gray-700 mb-2">
-              Password
-            </label>
+            <label htmlFor="password" className="block text-gray-700 mb-2">Password</label>
             <input
               type="password"
               id="password"
@@ -176,9 +159,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           {!isRegistered && (
             <>
               <div className="mb-4">
-                <label htmlFor="firstName" className="block text-gray-700 mb-2">
-                  First Name
-                </label>
+                <label htmlFor="firstName" className="block text-gray-700 mb-2">First Name</label>
                 <input
                   type="text"
                   id="firstName"
@@ -190,9 +171,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="lastName" className="block text-gray-700 mb-2">
-                  Last Name
-                </label>
+                <label htmlFor="lastName" className="block text-gray-700 mb-2">Last Name</label>
                 <input
                   type="text"
                   id="lastName"
@@ -203,8 +182,19 @@ const handleSubmit = async (e: React.FormEvent) => {
                   className="w-full p-3 border border-gray-300 rounded-lg"
                 />
               </div>
-
-              {/* Children Fields */}
+              <div className="mb-4">
+                <label htmlFor="telephone" className="block text-gray-700 mb-2">Telephone</label>
+                <input
+                  type="text"
+                  id="telephone"
+                  name="telephone"
+                  value={formData.telephone}
+                  onChange={handleChange}
+                  required
+                  className="w-full p-3 border border-gray-300 rounded-lg"
+                />
+              </div>
+                         {/* Children Fields */}
               <div className="mb-4">
                 <h3 className="text-xl font-semibold">Children</h3>
                 {formData.children.map((child, index) => (
@@ -212,7 +202,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label htmlFor={`childFirstName-${index}`} className="block text-gray-700 mb-2">
-                          Child's First Name
+                          First Name
                         </label>
                         <input
                           type="text"
@@ -226,7 +216,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       </div>
                       <div>
                         <label htmlFor={`childLastName-${index}`} className="block text-gray-700 mb-2">
-                          Child's Last Name
+                          Last Name
                         </label>
                         <input
                           type="text"
@@ -239,14 +229,14 @@ const handleSubmit = async (e: React.FormEvent) => {
                         />
                       </div>
                       <div>
-                        <label htmlFor={`childAge-${index}`} className="block text-gray-700 mb-2">
-                          Child's Age
+                        <label htmlFor={`childBirthdate-${index}`} className="block text-gray-700 mb-2">
+                          Birthday
                         </label>
                         <input
-                          type="number"
-                          id={`childAge-${index}`}
-                          name="age"
-                          value={child.age}
+                          type="date"
+                          id={`childBirthdate-${index}`}
+                          name="birthdate"
+                          value={child.birthDate || ""}
                           onChange={(e) => handleChange(e, index)}
                           required
                           className="w-full p-3 border border-gray-300 rounded-lg"
@@ -254,7 +244,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       </div>
                       <div>
                         <label htmlFor={`childGender-${index}`} className="block text-gray-700 mb-2">
-                          Child's Gender
+                          Gender
                         </label>
                         <select
                           id={`childGender-${index}`}
@@ -267,12 +257,11 @@ const handleSubmit = async (e: React.FormEvent) => {
                           <option value="">Select Gender</option>
                           <option value="male">Male</option>
                           <option value="female">Female</option>
-                          <option value="other">Other</option>
                         </select>
                       </div>
                     </div>
 
-                    {/* Delete Button for Each Child */}
+                    
                     <button
                       type="button"
                       onClick={() => deleteChild(index)}
@@ -292,6 +281,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   Add Another Child
                 </button>
               </div>
+          
             </>
           )}
 
@@ -318,6 +308,15 @@ const handleSubmit = async (e: React.FormEvent) => {
               {isRegistered ? 'Sign Up' : 'Sign In'}
             </button>
           </div>
+          <div className="text-center mt-4">
+            <button
+              type="button"
+              className="text-blue-500 hover:underline"
+              onClick={handleForgotPassword} // Trigger navigation to Forgot Password page
+            >
+              Forgot Email or Password?
+            </button>
+            </div>
         </form>
       </div>
     </div>

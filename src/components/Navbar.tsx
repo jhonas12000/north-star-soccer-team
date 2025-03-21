@@ -1,55 +1,74 @@
-//import React, { useState } from "react";
-import { Link } from 'react-router-dom';
-import '../index.css';
-import './Navbar.css';
 
 
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "../index.css";
+import "./Navbar.css"; // Ensure this file exists
 
 const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const logoImage = new URL("../images/North-Star-Logo.JPG", import.meta.url);
 
-   const logoImage = new URL("../images/North-Star-Logo.JPG", import.meta.url);
-  
-  return(
+  const toggleMenu = () => setIsOpen(!isOpen);
 
-   
-      <nav className="bg-indigo-400 border-gray-200 sticky top-0">
-        
-          <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-12">
-          <Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-            <img className="logo "  alt="North Star Logo" src={logoImage} />
-            <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"></span>
-          </Link>
-            <li>
-              <Link to="/about" className="text-white hover:underline to-blue-200" aria-current="page">About Us</Link>
-            </li>
-            <li>
-              <Link to="/players" className="text-white dark:text-white hover:underline">Our Players</Link>
-            </li>
-            <li>
-              <Link to="/parents" className="text-white dark:text-white hover:underline">Parents</Link>
-            </li>
-            <li>
-              <Link to="/matches" className="text-white dark:text-white hover:underline">Matches</Link>
-            </li>
-            <li>
-              <Link to="/contacts" className="text-white dark:text-white hover:underline">Contacts</Link>
-            </li>
-            <li>
-              <Link to="/login" className="text-white dark:text-white hover:underline" id="login">Login</Link>
-            </li>
-            
-          </ul>
-          {/* </div> */}
-        </nav>
-    
-    
-      
-      
-       
-    
-    
-  )
-}
+  // Close the menu when a link is clicked
+  const closeMenu = () => setIsOpen(false);
 
+  return (
+    <nav className="bg-indigo-400 flex items-center justify-between pt-5">
+      <Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+        <img className="w-10 ml-7" id="logo" alt="North Star Logo" src={logoImage} />
+      </Link>
+
+      {/* Hamburger Icon */}
+      <div className="md:hidden flex items-center">
+        <button
+          onClick={toggleMenu}
+          className={`hamburger-btn ${isOpen ? "open" : ""}`}  // Toggle 'open' class based on isOpen state
+        >
+          <span
+            className={`block w-6 h-0.5 bg-white mb-2 transition-all ${
+              isOpen ? "rotate-45 translate-y-2" : ""
+            }`}
+          />
+          <span
+            className={`block w-6 h-0.5 bg-white mb-2 transition-all ${
+              isOpen ? "opacity-0" : "opacity-100"
+            }`}
+          />
+          <span
+            className={`block w-6 h-0.5 bg-white transition-all ${
+              isOpen ? "-rotate-45 -translate-y-2" : ""
+            }`}
+          />
+        </button>
+      </div>
+
+      {/* Menu */}
+      <ul
+        className={`md:flex ${isOpen ? "flex flex-col items-center absolute top-16 left-0 w-full bg-indigo-400 md:static md:flex-row" : "hidden md:flex"}`}
+      >
+        <li className="md:inline-block md:ml-10 ml-5">
+          <Link to="/about" className="text-white text-base" onClick={closeMenu}>About Us</Link>
+        </li>
+        <li className="md:inline-block md:ml-10 ml-5">
+          <Link to="/players" className="text-white text-base" onClick={closeMenu}>Our Players</Link>
+        </li>
+        <li className="md:inline-block md:ml-10 ml-5">
+          <Link to="/parents" className="text-white text-base" onClick={closeMenu}>Parents</Link>
+        </li>
+        <li className="md:inline-block md:ml-10 ml-5">
+          <Link to="/matches" className="text-white text-base" onClick={closeMenu}>Matches</Link>
+        </li>
+        <li className="md:inline-block md:ml-10 ml-5">
+          <Link to="/contacts" className="text-white text-base" onClick={closeMenu}>Contacts</Link>
+        </li>
+        <li className="md:inline-block md:ml-10 ml-5">
+          <Link to="/login" className="text-white text-base" onClick={closeMenu}>Login/Register</Link>
+        </li>
+      </ul>
+    </nav>
+  );
+};
 
 export default Navbar;

@@ -10,7 +10,12 @@ import Home from './components/pages/Home';
 import Login from './components/pages/Login';
 import Layout from './components/Layout';
 import Parents from './components/pages/Parents';
+import { ToastContainer } from 'react-toastify';
+import Dashboard from './components/pages/Dashboard';
+import ForgotPassword from './components/pages/ForgotPassword'; 
+import ResetPassword from './components/pages/ResetPassword'; 
 //import  {About, Contact, Matches, Players, Home} from './components/pages;
+
 
 
 const App: React.FC = () => {
@@ -27,9 +32,14 @@ const App: React.FC = () => {
           <Route path="/players" element={<Players />} />
           <Route path="/parents" element={<Parents />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/forgotPassword" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          
         
         </Routes>
        </Layout>
+       <ToastContainer />
     </div>
     
   );

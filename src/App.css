@@ -1,21 +1,4 @@
 
-#root {
-  min-width: 180vh;
-  
-  margin: 0 ;
-  padding: 15px 7%;
-  /* padding: 2rem; */
-  margin-left:2 auto; 
- 
-}
-
-/* .logo {
-  height: 6em;
-  padding: 0.5em;
-  will-change: filter;
-  transition: filter 300ms;
-
-} */
 
 
 
@@ -29,4 +12,27 @@
 
 .read-the-docs {
   color: #888;
+}
+
+table {
+  table-layout: auto;
+  width: 100%;
+}
+
+/* Add overflow handling to the container */
+.overflow-x-auto {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure proper table scrolling on small screens */
+@media (max-width: 768px) {
+  .table-auto {
+    width: 100%;
+  }
+  .table-auto th,
+  .table-auto td {
+    padding: 10px;
+    font-size: 12px;
+  }
 }

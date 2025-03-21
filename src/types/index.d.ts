@@ -6,6 +6,15 @@ interface Player {
   gender: string;
 }
 
+interface Parent {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  children: Child[];
+}
+
 // interface PlayerTableProps {
 //   players: Player[];
 // }

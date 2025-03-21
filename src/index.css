@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Sora, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  
   line-height: 1.5;
   font-weight: 400;
 
@@ -16,20 +17,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-} */
 a:hover {
   color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
@@ -66,5 +55,60 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+table {
+  table-layout: auto;
+  width: 100%;
+}
+
+/* Add overflow handling to the container */
+.overflow-x-auto {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure proper table scrolling on small screens */
+@media (max-width: 768px) {
+  .table-auto {
+    width: 100%;
+  }
+  .table-auto th,
+  .table-auto td {
+    padding: 10px;
+    font-size: 12px;
+  }
+}
+.table-container {
+  overflow-x: auto;  /* Enable horizontal scrolling */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+}
+
+table {
+  width: 100%;
+  table-layout: fixed; /* Ensure the columns take up fixed space */
+}
+
+th, td {
+  text-align: left; /* Align the content to the left */
+  padding: 8px; /* Add some padding */
+  word-wrap: break-word; /* Ensure long words break to the next line */
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    table-layout: auto; /* Make the columns auto size */
+  }
+
+  th, td {
+    font-size: 12px; /* Adjust font size for small screens */
+    padding: 8px;  /* Reduce padding */
   }
 }

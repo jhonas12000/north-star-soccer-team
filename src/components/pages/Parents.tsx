@@ -14,6 +14,7 @@ interface Parent {
   lastName: string;
   telephone: string;
   email: string;
+  role: string;
   players: Player[];
 }
 
@@ -42,6 +43,25 @@ const Parents: React.FC = () => {
 
   if (loading) return <p className="text-center text-gray-600">Loading...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
+
+  // Delete Paretn function
+  const handleDeleteParent = (id: number) => {
+    if (!window.confirm("Are you sure you want to delete this Parent?")) return;
+
+    fetch(`http://localhost:8080/parent/delete/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete match");
+        }
+        // Remove deleted match from the state
+        setParents(parents.filter((parent) => parent.id !== id));
+      })
+      .catch((err) => {
+        alert("Error deleting parent: " + err.message);
+      });
+  };
 
   return (
     <div className="p-6">
@@ -78,15 +98,18 @@ const Parents: React.FC = () => {
                     </li>
                   ))}
                 </ul>
+                
               ) : (
                 <p className="text-gray-500 italic mt-2">
                   No children registered under this parent.
                 </p>
               )}
+              <button type="button" className="text-red-500 hover:underline mt-2" onClick={() => handleDeleteParent(parent.id)}>Delete</button>
             </div>
           ))}
         </div>
       )}
+      
     </div>
   );
 };

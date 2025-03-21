@@ -1,32 +1,85 @@
-/* nav {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-} */
-.logo {
+#logo {
     width: 120px;
-    /* height: 6em; */
     padding: 0.5em;
-    margin-left: 0%;
-    
-}
-
-nav ul {
-    align-items: center; 
-    flex: 1;
-    text-align: center;
-    list-style: none;
-}
-ul li {
-    font-size: 16px;
-    /* align-items: center; */
-    justify-content: space-between; 
-}
-img {
-    margin-right: 10cap;
+    margin-left: 0;
+  }
+  
+  img {
+    margin-right: 10px; /* Fixed typo 'cap' to 'px' */
     width: 160px;
     border-radius: 50%;
   }
-  #login{
-    margin-left: 25cap;
+  
+  /* Styling the navigation */
+  nav ul {
+    padding-left: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap when needed */
+    justify-content: center; /* Center items */
+    box-sizing: border-box; /* Prevents overflow */
   }
+  
+  nav ul li {
+    padding: 0.5rem;
+    flex: 1 0 auto; /* Allow each item to take up necessary space */
+  }
+  
+  /* On mobile screens, display the hamburger icon */
+  @media screen and (max-width: 768px) {
+    .hamburger-btn {
+      display: block;
+    }
+  
+    nav ul {
+      position: absolute;
+      top: 5rem;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.8);
+      width: 100%;
+      padding: 1rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: auto; /* Allow horizontal scroll if the menu overflows */
+      box-sizing: border-box; /* Prevents items from overflowing */
+    }
+  
+    nav ul li {
+      text-align: center;
+      margin-bottom: 1rem;
+      white-space: nowrap; /* Prevent text from breaking */
+    }
+  }
+  
+  /* Hide hamburger icon on larger screens */
+  @media (min-width: 768px) {
+    .hamburger-btn {
+      display: none;
+    }
+  
+    /* Horizontal menu on desktop */
+    nav ul {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+  
+    nav ul li {
+      margin-left: 2rem;
+    }
+  }
+  
+  button {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+  }
+
+
+  
